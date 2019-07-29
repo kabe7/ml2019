@@ -18,8 +18,8 @@ def bc_nonlinear(n=100, width=1.5):
     y: np.array(n)
         ラベル {+1, -1}
     """
-    x = np.random.uniform(-width, width, (n, 2))
-    noize = np.random.normal(0, 0.1, n)
+    x = np.random.uniform(-width, width, (n,2))
+    noize = np.random.normal(0, 0.8, n)
     r = np.sum(x*x, axis=1) + noize
     y = np.where(abs(r - width) < width/2, 1, -1)
 

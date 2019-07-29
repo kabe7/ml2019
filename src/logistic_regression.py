@@ -77,7 +77,7 @@ class LogisticRegression:
 
     def steepest_gradient_descent(self, w0=None, learning_rate=0.01, max_itr=1000, eps=1e-6):
         f = self.J
-        impr = lambda w, itr: - 1/(itr+1) * self.grad_J(w)
+        impr = lambda w, itr: - learning_rate * self.grad_J(w)
         return self.optimize(f, impr, w0, max_itr, eps)
 
     def gauss_newton(self, w0=None, max_itr=1000, eps=1e-6):
@@ -89,7 +89,7 @@ def test(n=100, dim=2, lam=1):
     X, y = bc_linear(n, dim)
 
     # offset用の次元を挿入
-    X = np.insert(X, 0, 1, axis=1)
+    X = np.insert(X, 2, 1, axis=1)
 
     w0 = np.empty(dim+1)
     #w0 = np.zeros(dim+1)
@@ -103,8 +103,7 @@ def test(n=100, dim=2, lam=1):
         ws_gn = np.empty(len(ws_sgd))
 
     # partitioningの確認
-    print(f"learned vector: {w}")
-    bc_plot_3(X, y, w)
+    bc_plot(X, y, w)
 
     # 各手法で求めた最適値との差分を取る
     ws_sgd, ws_gn = [(l-min(l))[:len(l)-1] for l in [ws_sgd, ws_gn]]
@@ -115,7 +114,6 @@ def test(n=100, dim=2, lam=1):
     plt.yscale("log")
     plt.plot(np.arange(len(ws_sgd)), ws_sgd, label="GD")
     plt.plot(np.arange(len(ws_gn)), ws_gn, label="Newton")
-    plt.xticks(np.linspace(0, (len(ws_sgd)//100 + 1) * 100, (len(ws_sgd)//100 + 1) * 2 + 1))
     plt.legend()
     plt.show()
 
