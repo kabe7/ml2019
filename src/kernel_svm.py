@@ -163,23 +163,44 @@ def main():
     X, y = bc_nonlinear(n) # dataset
     lam, sigma, degree = 1, 0.6, 3 # hyper-parameters
 
-    # build kernel_SVM instance
-    svm = kernel_SVM(X, y, lam, 'gauss', sigma)
-    #svm = kernel_SVM(X, y, lam, 'poly', degree)
+    for sigma in [0.2, 0.5, 0.7]:
+        # build kernel_SVM instance
+        svm = kernel_SVM(X, y, lam, 'gauss', sigma)
+        #svm = kernel_SVM(X, y, lam, 'poly', degree)
 
-    # run optimizer
-    eta_t = lambda t: (t+1)**(-1)
-    a = svm.projected_gradient_descent(max_itr=10000, learning_rate=eta_t)
-    
-    # convert solution of dual -> solution of primal
-    w = svm.dual2primal(a)
+        # run optimizer
+        eta_t = lambda t: (t+1)**(-1)
+        a = svm.projected_gradient_descent(max_itr=10000, learning_rate=eta_t)
+        
+        # convert solution of dual -> solution of primal
+        w = svm.dual2primal(a)
 
-    # reserve kernel function for contour
-    ker = lambda x: svm.gk(x, sigma)
-    #ker = lambda x: svm.poly(x, degree)
+        # reserve kernel function for contour
+        ker = lambda x: svm.gk(x, sigma)
+        #ker = lambda x: svm.poly(x, degree)
 
-    # draw Figure
-    bc_plot_kernel(X, y, w, ker)
+        # draw Figure
+        plt.title(f"sigma={sigma}")
+        bc_plot_kernel(X, y, w, ker)
+
+    for degree in [2, 3, 5]:
+        # build kernel_SVM instance
+        svm = kernel_SVM(X, y, lam, 'poly', degree)
+
+        # run optimizer
+        eta_t = lambda t: (t+1)**(-1)
+        a = svm.projected_gradient_descent(max_itr=1000000, learning_rate=eta_t)
+        
+        # convert solution of dual -> solution of primal
+        w = svm.dual2primal(a)
+
+        # reserve kernel function for contour
+        ker = lambda x: svm.poly(x, degree)
+
+        # draw Figure
+        plt.title(f"degree={degree}")
+        bc_plot_kernel(X, y, w, ker)
+
 
 if __name__ == "__main__":
     main()

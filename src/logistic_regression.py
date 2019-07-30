@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
-from datasets import bc_linear
+from datasets import bc_linear_4
 from draw_fig import *
 
 class LogisticRegression:
@@ -43,7 +43,7 @@ class LogisticRegression:
             目的関数
         impr: np.array(d), int -> np.array(d)
             パラメータ改善の関数
-            w_(t+1) = w_t + impr(w_t)
+            w_(t+1) = w_t + impr(w_t, itr)
         w0: np.array(d)
             初期値
         max_itr: Int
@@ -66,18 +66,23 @@ class LogisticRegression:
         for itr in range(max_itr):
             w = w + impr(w, itr)
             now = f(w)
-            print(f"iteration {itr}: {prev} -> {now}")
+            print(f"iteration {itr}: {prev} -> {now}", end='\r')
             f_values.append(now)
             if(abs(prev - now) < eps):
-                print(f"iteration stop at {itr}")
+                print(f"\niteration stop at {itr}")
                 break
             else:
                 prev = now
         return w, f_values
 
     def steepest_gradient_descent(self, w0=None, learning_rate=0.01, max_itr=1000, eps=1e-6):
+        if not callable(learning_rate):
+            eta = lambda itr: learning_rate
+        else:
+            eta = learning_rate
+
         f = self.J
-        impr = lambda w, itr: - learning_rate * self.grad_J(w)
+        impr = lambda w, itr: - eta(itr) * self.grad_J(w)
         return self.optimize(f, impr, w0, max_itr, eps)
 
     def gauss_newton(self, w0=None, max_itr=1000, eps=1e-6):
@@ -85,25 +90,26 @@ class LogisticRegression:
         impr = lambda w, itr: - np.linalg.solve(self.hess_J(w), self.grad_J(w))
         return self.optimize(f, impr, w0, max_itr, eps)
 
-def test(n=100, dim=2, lam=1):
-    X, y = bc_linear(n, dim)
+def test(n=100, lam=1):
+    X, y = bc_linear_4(n)
 
     # offset用の次元を挿入
-    X = np.insert(X, 2, 1, axis=1)
+    X = np.insert(X, 3, 1, axis=1)
 
-    w0 = np.empty(dim+1)
-    #w0 = np.zeros(dim+1)
+    #w0 = np.empty(5)
+    w0 = np.zeros(5)
 
     # calculation
     lr = LogisticRegression(X, y, lam)
-    w, ws_sgd = lr.steepest_gradient_descent(w0, learning_rate=1e-3, max_itr=1000)
+    learning_rate = lambda t: 1/(t+1)
+    w, ws_sgd = lr.steepest_gradient_descent(w0, learning_rate=1e-3, max_itr=10000)
     try:
         _, ws_gn = lr.gauss_newton(w0)
     except np.linalg.LinAlgError:
         ws_gn = np.empty(len(ws_sgd))
 
     # partitioningの確認
-    bc_plot(X, y, w)
+    bc_plot(X[:,1:4], y, w[1:4].T)
 
     # 各手法で求めた最適値との差分を取る
     ws_sgd, ws_gn = [(l-min(l))[:len(l)-1] for l in [ws_sgd, ws_gn]]
