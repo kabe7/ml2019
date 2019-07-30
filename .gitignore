@@ -1,5 +1,15 @@
 .vscode
 __pycache__
+
+# folder for short reports
 assignment/*
-docs/*
+
+# folder for resumes
 resume/*
+
+# folder for the tex file
+docs/*.tex
+docs/*.pdf
+docs/*.synctex.gz
+
+

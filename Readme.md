@@ -6,7 +6,7 @@ Anaconda 4.7.5
 Python 3.7.3
 numpy 1.16.2 (科学技術計算ライブラリ)
 matplotlib 3.0.3 (グラフ描画ライブラリ)
-
+seaborn 0.9.0 (matplotlibの補助ライブラリ)
 
 ```
 conda create -n ml python=3.7
@@ -17,6 +17,7 @@ seabornは見栄えのために入れています。
 
 ## about
 ### Q1: Logistic Regression
+#### binary classification
 src/logistic_regression.pyで実装
 ```Python
 n, dim = 100, 2 
@@ -35,6 +36,22 @@ w, _ = lr.steepest_gradient_descent(learning_rate=1e-3, max_itr=1000)
 # draw Figure
 bc_plot(X, y, w)
 ```
+![](docs/img/lr.png)
+
+#### multiclass classification
+src/multi_lr.pyで実装
+```Python
+n=100 # data size
+X, y = mc_linear(n) # dataset
+
+# classification
+w = one_vs_all(X, y, 1) 
+
+# draw Figure
+plt.title("3-class classification")
+mc_plot(X[:,1:3], y, w[1:4,:])
+```
+![](docs/img/multiclass.png)
 
 ### Q3: Support Vector Machine
 src/svm.pyで実装
@@ -53,6 +70,7 @@ a, alphas = svm.projected_gradient_descent(learning_rate=eta_t)
 # draw figure: 
 bc_plot(X, y, svm.a2w(a))
 ```
+![](docs/img/Q3.png)
 
 ### Q5: kerneled-SVM
 src/kernel_svm.pyで実装
@@ -77,3 +95,4 @@ ker = lambda x: svm.gk(x, sigma)
 # draw Figure
 bc_plot_kernel(X, y, w, ker)
 ```
+![](docs/img/sigma_02.png)

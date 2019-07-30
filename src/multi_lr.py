@@ -36,9 +36,13 @@ def one_vs_all(X, y, lam):
     return w
 
 def main():
-    n=100
-    X, y = mc_linear(n)    
-    w = one_vs_all(X,y,1)
+    n=100 # data size
+    X, y = mc_linear(n) # dataset
+
+    # classification
+    w = one_vs_all(X, y, 1) 
+    
+    # draw Figure
     plt.title("3-class classification")
     mc_plot(X[:,1:3], y, w[1:4,:])
 
